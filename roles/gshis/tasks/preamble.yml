@@ -1,0 +1,33 @@
+- name: ensure gshis is subvolume
+  btrfs: path=/var/lib/machines/gshis state=present
+
+- name: ensure gshis is a machine
+  machines: name=gshis ensure=present
+
+- name: checkout gshis repo
+  git:  repo=https://github.com/theappleman/gshis
+        dest=/var/lib/machines/gshis
+        version=master
+  register: gshis_repo
+
+- name: grab short git repo version
+  shell: git describe --always
+  args:
+    chdir: /var/lib/machines/gshis
+  register: gshis_describe
+  tags:
+  - test
+
+- name: check for clone source machine
+  machines:
+    name:   "gshis-{{ gshis_describe.stdout }}-systemd"
+    ensure: present
+  ignore_errors: yes
+  register: clone_source
+
+- name: make clone source machine
+  shell: make systemd
+  args:
+    chdir: /var/lib/machines/gshis
+    creates: "/var/lib/machines/gshis-{{ gshis_describe.stdout }}-systemd"
+  when: clone_source|failed

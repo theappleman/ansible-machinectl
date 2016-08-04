@@ -1,0 +1,31 @@
+- name: clone test container
+  machines: name=test source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
+
+- name: start test container
+  machines: name=test ensure=running
+
+- pause: seconds=20
+
+- machines: name=test mode=pkg pkg={{item}}
+  with_items:
+  - htop
+  - bwm-ng
+  - iptraf-ng
+  - nmap
+  ignore_errors: yes
+
+- pause: seconds=50
+
+- name: stop test container
+  machines: name=test ensure=stopped
+
+- pause: seconds=5
+
+- name: terminate test container
+  machines: name=test ensure=terminated
+
+- pause: seconds=5
+
+- name: remove test container
+  machines: name=test source=gshis-{{ gshis_describe.stdout }}-systemd ensure=absent
+

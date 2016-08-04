@@ -1,0 +1,13 @@
+- include: preamble.yml
+
+- name: gshis.nspawn
+  copy: src=files/gshis.nspawn
+        dest=/etc/systemd/nspawn/gshis.nspawn
+
+- name: br0.netdev
+  copy: src=files/br0.netdev
+        dest=/etc/systemd/network/br0.netdev
+
+- include: test.yml
+  tags:
+  - test
