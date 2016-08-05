@@ -150,14 +150,5 @@ def main():
         module.fail_json(msg="Unknown state option: {}".format(module.params['state']))
     module.fail_json(msg="Unknown mode option: {}".format(module.params['mode']))
 
-#    if module.check_mode:
-#        module.exit_json(changed=False)
-
-#    running = sp.check_output(["machinectl", "--no-legend"])
-#    images  = sp.check_output(["machinectl", "--no-legend", "list-images"])
-
-#    module.exit_json(running=running, images=images)
-
-
 if __name__ == '__main__':
     main()
