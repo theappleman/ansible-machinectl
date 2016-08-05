@@ -3,8 +3,10 @@
 
 - name: start test container
   machines: name=test ensure=running
+  register: start
 
 - pause: seconds=20
+  when: start|changed
 
 - machines: name=test mode=pkg pkg={{item}}
   with_items:
@@ -18,13 +20,17 @@
 
 - name: stop test container
   machines: name=test ensure=stopped
+  register: stop
 
 - pause: seconds=5
+  when: stop|changed
 
 - name: terminate test container
   machines: name=test ensure=terminated
+  register: terminate
 
 - pause: seconds=5
+  when: terminate|changed
 
 - name: remove test container
   machines: name=test source=gshis-{{ gshis_describe.stdout }}-systemd ensure=absent
