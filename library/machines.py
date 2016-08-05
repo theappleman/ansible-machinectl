@@ -2,6 +2,7 @@
 
 from ansible.module_utils.basic import *
 import subprocess as sp
+import os
 
 class Machine():
     def __init__(self, module):
@@ -48,7 +49,22 @@ class Machine():
 
     def clone(self):
         try:
-            sp.check_output(["machinectl", "clone", self.module.params['source'], self.module.params['name']])
+            sp.check_output([
+                "machinectl",
+                "clone",
+                self.module.params['source'],
+                self.module.params['name']
+            ])
+            sp.check_output([
+                "systemd-machine-id-setup",
+                "--root",
+                os.path.join(
+                    "var",
+                    "lib",
+                    "machines",
+                    self.module.params['name']
+                )
+            ])
             return True
         except sp.CalledProcessError:
             return False
