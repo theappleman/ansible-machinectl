@@ -4,6 +4,8 @@
 - name: ensure gshis is a machine
   machines: name=gshis ensure=present
 
+- portage: package=dev-vcs/git state=present
+
 - name: checkout gshis repo
   git:  repo=https://github.com/theappleman/gshis
         dest=/var/lib/machines/gshis
