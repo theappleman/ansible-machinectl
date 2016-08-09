@@ -21,7 +21,7 @@
   - nmap
   ignore_errors: yes
 
-- pause: seconds=50
+- pause: seconds=600
 
 - name: stop test container
   machines: name=test ensure=stopped

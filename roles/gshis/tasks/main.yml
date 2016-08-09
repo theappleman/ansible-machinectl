@@ -13,6 +13,3 @@
   copy: src=files/br0.netdev
         dest=/etc/systemd/network/br0.netdev
 
-- include: test.yml
-  tags:
-  - test
