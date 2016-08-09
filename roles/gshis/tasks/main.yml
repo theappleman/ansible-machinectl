@@ -12,4 +12,8 @@
 - name: br0.netdev
   copy: src=files/br0.netdev
         dest=/etc/systemd/network/br0.netdev
+  register: br0
 
+- name: update networkd
+  shell: systemctl restart systemd-networkd
+  when: br0|changed
