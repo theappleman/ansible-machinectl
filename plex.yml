@@ -1,0 +1,16 @@
+---
+- hosts: containers
+  roles:
+  - gshis
+  - plex
+  tags:
+  - plex
+
+- hosts: containers
+  roles:
+  - gshis
+  - deluge
+  tags:
+  - deluge
+
+

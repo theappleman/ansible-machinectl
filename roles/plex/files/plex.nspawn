@@ -1,0 +1,9 @@
+[Exec]
+Boot=on
+
+[Files]
+Bind=/usr/portage
+BindReadOnly=/srv/mediacache
+
+[Network]
+Bridge=br0

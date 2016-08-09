@@ -1,0 +1,28 @@
+- name: clone deluge container
+  machines: name=deluge source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
+
+- name: machineid
+  shell: systemd-machine-id-setup --root /var/lib/machines/deluge
+  args:
+    creates: /var/lib/machines/deluge/etc/machine-id
+
+- name: deluge nspawn
+  copy: src=files/deluge.nspawn dest=/etc/systemd/nspawn/deluge.nspawn
+
+- name: deluge USE
+  lineinfile: name=/var/lib/machines/deluge/etc/portage/make.conf line='USE="$USE python"'
+
+- name: start deluge container
+  machines: name=deluge ensure=running
+  register: start
+
+- pause: seconds=20
+  when: start|changed
+
+- machines: name=deluge mode=pkg pkg={{item}}
+  with_items:
+  - deluge
+
+- file: state=link src=/usr/lib/systemd/system/deluged.service
+        dest=/var/lib/machines/deluge/etc/systemd/system/multi-user.target.wants/deluged.service
+        force=yes

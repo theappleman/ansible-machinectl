@@ -1,0 +1,45 @@
+- name: clone plex container
+  machines: name=plex source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
+
+- name: machineid
+  shell: systemd-machine-id-setup --root /var/lib/machines/plex
+  args:
+    creates: /var/lib/machines/plex/etc/machine-id
+
+- name: plex keyword
+  lineinfile: name=/var/lib/machines/plex/etc/portage/package.accept_keywords line='media-tv/plex-media-server'
+
+- name: plex license
+  lineinfile: name=/var/lib/machines/plex/etc/portage/package.license line='media-tv/plex-media-server PMS-License' create=yes
+
+- name: create repos.conf directory
+  file: state=directory name=/var/lib/machines/plex/etc/portage/repos.conf
+
+- name: create portage overlay tld
+  file: state=directory name=/var/lib/machines/plex/usr/local/portage
+
+- name: copy megacoffee repo.conf
+  copy: src=files/megacoffee.conf dest=/var/lib/machines/plex/etc/portage/repos.conf/megacoffee.conf
+
+- name: plex nspawn
+  copy: src=files/plex.nspawn dest=/etc/systemd/nspawn/plex.nspawn
+
+- name: start plex container
+  machines: name=plex ensure=running
+  register: start
+
+- pause: seconds=20
+  when: start|changed
+
+
+- portage: package=mercurial
+- hg: dest=/var/lib/machines/plex/usr/local/portage/megacoffee
+      repo=https://rhodecode.megacoffee.net/gentoo-overlay/main
+
+- machines: name=plex mode=pkg pkg={{item}}
+  with_items:
+  - plex-media-server
+
+- file: state=link src=/etc/systemd/system/plexmediaserver.service
+        dest=/var/lib/machines/plex/etc/systemd/system/multi-user.target.wants/plexmediaserver.service
+        force=yes
