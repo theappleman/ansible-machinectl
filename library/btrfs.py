@@ -12,7 +12,7 @@ class BtrFS():
             sp.check_call(["btrfs", "subvolume", "show", path])
             return True
         except sp.CalledProcessError as e:
-            self.module.fail_json(msg=e)
+            #self.module.fail_json(msg=e)
             return False
 
     def _create_subv(self, path):
