@@ -1,0 +1,9 @@
+route-ttl 30000
+proxy {{ ansible_default_ipv6.interface }} {
+   router yes
+   timeout 500
+   ttl 30000
+   rule {{ ansible_default_ipv6.address }}/{{ ansible_br0.ipv6[0]['prefix'] }} {
+      auto
+   }
+}

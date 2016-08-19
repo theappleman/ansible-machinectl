@@ -1,0 +1,9 @@
+- lineinfile: dest=/etc/portage/package.accept_keywords line="=net-misc/ndppd-0.2.3" create=yes
+- portage: package=ndppd
+- copy: src=files/ndppd.service dest=/etc/systemd/system/ndppd.service
+  register: ndppdservice
+- shell: systemctl daemon-reload
+  when: ndppdservice|changed
+- template: src=templates/ndppd.conf.j2 dest=/etc/ndppd.conf
+- service: name=ndppd state=started
+

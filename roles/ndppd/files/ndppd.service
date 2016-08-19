@@ -1,0 +1,8 @@
+[Unit]
+Description=NDP Proxy daemon
+
+[Service]
+ExecStart=/usr/sbin/ndppd
+
+[Install]
+WantedBy=default.target
