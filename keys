@@ -1,0 +1,12 @@
+#!/bin/bash
+
+hosts=$1
+shift
+
+playbook=$(mktemp -p .)
+for host in $@; do
+	echo -e "- hosts: $hosts\n  roles:" >> $playbook
+	for role in gshis keys; do echo "  - $role"; done >> $playbook
+	ansible-playbook -v -e container=$host $playbook
+done
+rm "$playbook"

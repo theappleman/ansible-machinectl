@@ -1,0 +1,23 @@
+- machines: state=present name={{ container | mandatory }} source=gshis-{{ gshis_describe.stdout }}-systemd
+
+- stat: path=/var/lib/machines/{{ container }}
+  register: container_root
+
+- portage: package=git
+
+- git: repo=https://github.com/theappleman/authorized_keys.d
+       dest=/tmp/authorized_keys.d
+       version=master
+
+- shell: ./2-show
+  args:
+    chdir: /tmp/authorized_keys.d
+  register: auth_keys
+
+- file: dest=/var/lib/machines/{{ container | mandatory }}/root/.ssh
+        owner={{ container_root.stat.uid }} group={{ container_root.stat.gid }} mode=0700
+        state=directory
+
+- copy: dest=/var/lib/machines/{{ container | mandatory }}/root/.ssh/authorized_keys
+        owner={{ container_root.stat.uid }} group={{ container_root.stat.gid }} mode=0600
+        content={{ auth_keys.stdout }}
