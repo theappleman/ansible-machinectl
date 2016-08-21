@@ -84,14 +84,25 @@ class Machine():
             self.output = e.output
             return False
 
+    def run(self):
+        try:
+            cmd = ["systemd-run", "--service-type=oneshot", "-M", self.module.params['name']]
+            [cmd.append(word) for word in self.module.params['cmd'].split(" ")]
+            self.output = sp.check_output(cmd, stderr=sp.STDOUT)
+            return True
+        except sp.CalledProcessError as e:
+            self.output = e.output
+            return False
+
 def main():
     module = AnsibleModule(
         argument_spec = dict(
             name    = dict(required=True),
-            mode    = dict(default="container", choices=["pkg","container","exec"]),
+            mode    = dict(default="container", choices=["pkg","container","exec", "run"]),
             state   = dict(default="present", choices=['present', 'running', 'absent', 'stopped', 'terminated'], aliases=['ensure']),
             source  = dict(required=False, aliases=['clone']),
             pkg     = dict(required=False),
+            cmd     = dict(required=False),
         ),
         supports_check_mode=True
     )
@@ -164,6 +175,19 @@ def main():
             module.fail_json(msg="Error installing package {} in {}".format(module.params['pkg'],module.params['name']), output=machine.output)
 
         module.fail_json(msg="Unknown state option: {}".format(module.params['state']))
+
+    elif module.params['mode'] == "run":
+        if module.check_mode:
+            module.fail_json(msg="not implemented")
+        elif machine.run():
+            module.exit_json(msg="Command run container {} successful: {}".format(module.params['name'], module.params['cmd']), output=machine.output)
+        else:
+            module.fail_json(msg="Command run in container {} unsuccessful: {}".format(module.params['name'],module.params['cmd']), output=machine.output)
+
+        module.fail_json(msg="Unknown state option: {}".format(module.params['state']))
+
+
+
     module.fail_json(msg="Unknown mode option: {}".format(module.params['mode']))
 
 if __name__ == '__main__':
