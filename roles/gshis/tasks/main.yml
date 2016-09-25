@@ -5,9 +5,6 @@
   - nspawn
   - network
 
-- name: gshis.nspawn
-  copy: src=files/gshis.nspawn
-        dest=/etc/systemd/nspawn/gshis.nspawn
 
 - name: br0.netdev
   copy: src=files/br0.netdev

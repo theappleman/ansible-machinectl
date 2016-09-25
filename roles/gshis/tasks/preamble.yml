@@ -20,6 +20,14 @@
   tags:
   - test
 
+- name: nspawn directory
+  file: dest=/etc/systemd/nspawn
+        state=directory
+
+- name: gshis.nspawn
+  copy: src=files/gshis.nspawn
+        dest=/etc/systemd/nspawn/gshis.nspawn
+
 - name: check for clone source machine
   machines:
     name:   "gshis-{{ gshis_describe.stdout }}-systemd"
