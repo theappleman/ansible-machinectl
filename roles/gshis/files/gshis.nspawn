@@ -3,6 +3,8 @@ Boot=on
 
 [Files]
 Bind=/usr/portage
+BindReadOnly=/lib/modules
+TemporaryFileSystem=/usr/portage/distfiles
 
 [Network]
 Bridge=br0
