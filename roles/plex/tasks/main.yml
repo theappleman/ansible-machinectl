@@ -1,28 +1,13 @@
-- name: clone plex container
-  machines: name=plex source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
+- include: container.yml
+- include: portage.yml
 
-- name: machineid
-  shell: systemd-machine-id-setup --root /var/lib/machines/plex
-  args:
-    creates: /var/lib/machines/plex/etc/machine-id
-
-- name: plex keyword
-  lineinfile: name=/var/lib/machines/plex/etc/portage/package.accept_keywords line='media-tv/plex-media-server'
-
-- name: plex license
-  lineinfile: name=/var/lib/machines/plex/etc/portage/package.license line='media-tv/plex-media-server PMS-License' create=yes
-
-- name: create repos.conf directory
-  file: state=directory name=/var/lib/machines/plex/etc/portage/repos.conf
-
-- name: create portage overlay tld
-  file: state=directory name=/var/lib/machines/plex/usr/local/portage
-
-- name: copy megacoffee repo.conf
-  copy: src=files/megacoffee.conf dest=/var/lib/machines/plex/etc/portage/repos.conf/megacoffee.conf
-
-- name: plex nspawn
-  copy: src=files/plex.nspawn dest=/etc/systemd/nspawn/plex.nspawn
+# Before starting container, modify default firewall to allow port 32400
+- lineinfile: line="[0:0] -A TCP -p tcp --dport 32400 -j ACCEPT"
+              insertbefore="COMMIT"
+              dest="/var/lib/machines/plex/var/lib/ip{{ item }}tables/rules-save"
+  with_items:
+  - ""
+  - "6"
 
 - name: start plex container
   machines: name=plex ensure=running
@@ -31,10 +16,12 @@
 - pause: seconds=20
   when: start|changed
 
-
-- portage: package=mercurial
-- hg: dest=/var/lib/machines/plex/usr/local/portage/megacoffee
-      repo=https://rhodecode.megacoffee.net/gentoo-overlay/main
+# Fix UID/GID of plex volume
+- stat: path=/var/lib/machines/plex
+  register: plex_root
+- file: dest=/srv/volumes/plex
+        owner={{ plex_root.stat.uid}} group={{ plex_root.stat.gid }} mode=755
+        state=directory
 
 - machines: name=plex mode=pkg pkg={{item}}
   with_items:
@@ -43,3 +30,23 @@
 - file: state=link src=/etc/systemd/system/plexmediaserver.service
         dest=/var/lib/machines/plex/etc/systemd/system/multi-user.target.wants/plexmediaserver.service
         force=yes
+  register: service_link
+
+- include: volume.yml
+
+- machines: name=plex mode=run
+            cmd="/usr/bin/systemctl restart plexmediaserver"
+  when: service_link|changed or plex_create|changed
+
+- shell: machinectl status plex | awk '/Address:/{print$2}'
+  register: plex_v4addr
+
+- iptables: comment=PLEX
+            ip_version=ipv4
+            table=nat
+            #action=insert
+            chain=PREROUTING
+            protocol=tcp
+            destination_port=32400
+            to_destination="{{ plex_v4addr.stdout }}:32400"
+            jump=DNAT

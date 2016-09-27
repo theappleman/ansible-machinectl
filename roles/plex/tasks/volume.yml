@@ -1,0 +1,20 @@
+- shell: "awk -F: '/plex/{print$3}' /var/lib/machines/plex/etc/passwd | head -1"
+  register: plex_owner
+
+- shell: "awk -F: '/plex/{print$4}' /var/lib/machines/plex/etc/passwd | head -1"
+  register: plex_group
+
+- file: state=directory
+        dest=/srv/volumes/plex
+        mode=0755
+        owner={{ plex_owner.stdout }}
+        group={{ plex_group.stdout }}
+  register: plex_dir
+
+- file: state=directory
+        dest=/srv/volumes/plex
+        owner={{ plex_owner.stdout }}
+        group={{ plex_group.stdout }}
+        recurse=yes
+  when: plex_dir|changed
+
