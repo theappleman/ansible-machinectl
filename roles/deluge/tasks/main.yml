@@ -28,7 +28,7 @@
 
 - set_fact:
     deluge_user: deluge
-    deluge_password: "{{ lookup('password', 'credentials/deluge/' + inventory_hostname + '/password') }}"
+    deluge_password: "{{ lookup('password', 'credentials/deluge/' + inventory_hostname + '/password chars=ascii_letters,digits') }}"
 
 - lineinfile: line="{{ deluge_user }}:{{ deluge_password }}:5"
               dest=/srv/volumes/deluge/.config/deluge/auth
