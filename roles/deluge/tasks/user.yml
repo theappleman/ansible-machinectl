@@ -1,0 +1,8 @@
+- command: "awk -F: '/^deluge:/{print$1}' /var/lib/machines/deluge/etc/passwd"
+  register: deluge_user_exists
+  changed_when: False
+
+- machines: mode=run name=deluge
+            cmd="/usr/sbin/useradd -d /var/cache/deluge deluge"
+  when: not deluge_user_exists.stdout | match("deluge")
+

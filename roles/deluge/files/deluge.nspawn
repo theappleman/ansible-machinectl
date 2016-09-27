@@ -1,9 +1,11 @@
 [Exec]
 Boot=on
+PrivateUsers=no
 
 [Files]
 Bind=/usr/portage
 Bind=/srv/mediacache
+Bind=/srv/volumes/deluge:/var/cache/deluge
 BindReadOnly=/lib/modules
 TemporaryFileSystem=/usr/portage/distfiles
 

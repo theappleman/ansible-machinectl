@@ -1,0 +1,18 @@
+- name: clone deluge container
+  machines: name=deluge source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
+  register: deluge_create
+
+- name: machineid
+  shell: systemd-machine-id-setup --root /var/lib/machines/deluge
+  args:
+    creates: /var/lib/machines/deluge/etc/machine-id
+
+- name: mediacache
+  btrfs: ensure=present name=/srv/mediacache
+
+- name: deluge config volume
+  btrfs: ensure=present name=/srv/volumes/deluge
+
+- name: deluge nspawn
+  copy: src=files/deluge.nspawn dest=/etc/systemd/nspawn/deluge.nspawn
+

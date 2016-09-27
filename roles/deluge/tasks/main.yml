@@ -1,19 +1,5 @@
-- name: clone deluge container
-  machines: name=deluge source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
-
-- name: machineid
-  shell: systemd-machine-id-setup --root /var/lib/machines/deluge
-  args:
-    creates: /var/lib/machines/deluge/etc/machine-id
-
-- name: deluge nspawn
-  copy: src=files/deluge.nspawn dest=/etc/systemd/nspawn/deluge.nspawn
-
-- name: deluge conf.d
-  copy: src=files/deluged.conf dest=/var/lib/machines/deluge/etc/conf.d/deluged
-
-- name: deluge USE
-  lineinfile: name=/var/lib/machines/deluge/etc/portage/make.conf line='USE="$USE python"'
+- include: container.yml
+- include: portage.yml
 
 - name: start deluge container
   machines: name=deluge ensure=running
@@ -29,3 +15,20 @@
 - file: state=link src=/usr/lib/systemd/system/deluged.service
         dest=/var/lib/machines/deluge/etc/systemd/system/multi-user.target.wants/deluged.service
         force=yes
+  register: deluge_service_link
+
+- include: user.yml
+- include: volume.yml
+
+- machines: name=deluge mode=run
+            cmd="/usr/bin/systemctl restart deluged"
+  when: deluge_service_link|changed or deluge_create|changed
+
+- include: iptables.yml
+
+- set_fact:
+    deluge_user: deluge
+    deluge_password: "{{ lookup('password', 'credentials/deluge/' + inventory_hostname + '/password') }}"
+
+- lineinfile: line="{{ deluge_user }}:{{ deluge_password }}:5"
+              dest=/srv/volumes/deluge/.config/deluge/auth

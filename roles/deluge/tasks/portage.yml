@@ -1,0 +1,7 @@
+- name: deluge conf.d
+  copy: src=files/deluged.conf dest=/var/lib/machines/deluge/etc/conf.d/deluged
+
+- name: deluge USE
+  lineinfile: name=/var/lib/machines/deluge/etc/portage/make.conf line='USE="$USE python"'
+
+
