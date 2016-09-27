@@ -16,3 +16,5 @@
 - name: deluge nspawn
   copy: src=files/deluge.nspawn dest=/etc/systemd/nspawn/deluge.nspawn
 
+- lineinfile: state=absent line="net.ipv6.bindv6only=1" dest=/var/lib/machines/deluge/etc/sysctl.d/ipv6.conf
+- lineinfile: line="net.ipv6.bindv6only=0" dest=/var/lib/machines/deluge/etc/sysctl.d/ipv6.conf
