@@ -1,0 +1,17 @@
+- name: stop {{ container }} container
+  machines: name={{ container }} ensure=stopped
+  register: stop
+
+- pause: seconds=5
+  when: stop|changed
+
+- name: terminate {{ container }} container
+  machines: name={{ container }} ensure=terminated
+  register: terminate
+
+- pause: seconds=5
+  when: terminate|changed
+
+- name: remove {{ container }} container
+  machines: name={{ container }} ensure=absent
+

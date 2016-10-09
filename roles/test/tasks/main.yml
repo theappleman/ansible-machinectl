@@ -13,20 +13,4 @@
 
 - pause: seconds=600
 
-- name: stop test container
-  machines: name=test ensure=stopped
-  register: stop
-
-- pause: seconds=5
-  when: stop|changed
-
-- name: terminate test container
-  machines: name=test ensure=terminated
-  register: terminate
-
-- pause: seconds=5
-  when: terminate|changed
-
-- name: remove test container
-  machines: name=test source=gshis-{{ gshis_describe.stdout }}-systemd ensure=absent
-
+- include: tasks/delete.yml

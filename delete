@@ -1,0 +1,10 @@
+#!/bin/bash
+
+hosts=$1
+shift
+
+playbook=$(mktemp -p .)
+echo -e "- hosts: $hosts\n  tasks:" >> $playbook
+for host in $@; do echo "  - include: tasks/delete.yml container=$host"; done >> $playbook
+ansible-playbook -v $playbook
+rm "$playbook"
