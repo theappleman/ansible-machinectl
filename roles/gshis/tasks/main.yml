@@ -5,6 +5,7 @@
   - nspawn
   - network
 
+- file: path=/srv/volumes state=directory
 
 - name: br0.netdev
   copy: src=files/br0.netdev
