@@ -11,12 +11,7 @@
   - ""
   - "6"
 
-- name: start plex container
-  machines: name=plex ensure=running
-  register: start
-
-- pause: seconds=20
-  when: start|changed
+- include: tasks/start.yml
 
 # Fix UID/GID of plex volume
 - stat: path=/var/lib/machines/plex

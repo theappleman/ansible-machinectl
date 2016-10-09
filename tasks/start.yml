@@ -1,0 +1,7 @@
+- name: start {{ container }} container
+  machines: name={{ container }} ensure=running
+  register: "{{ container }}_start"
+
+- name: await container startup
+  pause: seconds=5
+  when: "{{ container }}_start|changed"

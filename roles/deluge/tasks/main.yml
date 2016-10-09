@@ -2,12 +2,7 @@
 - include: container.yml
 - include: portage.yml
 
-- name: start deluge container
-  machines: name=deluge ensure=running
-  register: start
-
-- pause: seconds=20
-  when: start|changed
+- include: start.yml
 
 - machines: name=deluge mode=pkg pkg={{item}}
   with_items:

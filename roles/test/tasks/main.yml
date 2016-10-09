@@ -1,12 +1,7 @@
 - set_fact: container=test
 - include: tasks/create.yml
 
-- name: start test container
-  machines: name=test ensure=running
-  register: start
-
-- pause: seconds=20
-  when: start|changed
+- include: tasks/start.yml
 
 - machines: name=test mode=pkg pkg={{item}}
   with_items:
