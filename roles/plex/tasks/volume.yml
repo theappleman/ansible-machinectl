@@ -1,8 +1,10 @@
 - shell: "awk -F: '/plex/{print$3}' /var/lib/machines/plex/etc/passwd | head -1"
   register: plex_owner
+  changed_when: False
 
 - shell: "awk -F: '/plex/{print$4}' /var/lib/machines/plex/etc/passwd | head -1"
   register: plex_group
+  changed_when: False
 
 - file: state=directory
         dest=/srv/volumes/plex

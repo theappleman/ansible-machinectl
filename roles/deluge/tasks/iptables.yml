@@ -15,6 +15,7 @@
 
 - shell: machinectl status deluge | awk '/Address:/{print$2}'
   register: deluge_v4addr
+  changed_when: False
 
 - iptables: comment=DELUGE
             ip_version=ipv4

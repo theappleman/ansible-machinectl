@@ -1,8 +1,10 @@
 - shell: "awk -F: '/deluge/{print$3}' /var/lib/machines/deluge/etc/passwd | head -1"
   register: deluge_owner
+  changed_when: False
 
 - shell: "awk -F: '/deluge/{print$4}' /var/lib/machines/deluge/etc/passwd | head -1"
   register: deluge_group
+  changed_when: False
 
 - file: state=directory
         dest=/srv/volumes/deluge

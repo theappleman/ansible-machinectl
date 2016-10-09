@@ -17,6 +17,7 @@
   args:
     chdir: /var/lib/machines/gshis
   register: gshis_describe
+  changed_when: False
   tags:
   - test
 
