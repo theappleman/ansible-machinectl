@@ -13,13 +13,6 @@
 
 - include: tasks/start.yml
 
-# Fix UID/GID of plex volume
-- stat: path=/var/lib/machines/plex
-  register: plex_root
-- file: dest=/srv/volumes/plex
-        owner={{ plex_root.stat.uid}} group={{ plex_root.stat.gid }} mode=755
-        state=directory
-
 - machines: name=plex mode=pkg pkg={{item}}
   with_items:
   - plex-media-server
