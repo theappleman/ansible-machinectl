@@ -19,6 +19,15 @@ class Machine():
         except sp.CalledProcessError:
             return False
 
+    def _is_pkg_installed(self):
+        # This is a little backwards...
+        os.environ['ROOT'] = os.path.join("/","var", "lib", "machines", self.module.params['name'])
+        import portage
+        if portage.db[portage.root]['vartree'].dbapi.match(self.module.params['pkg']) == []:
+            return False
+        else:
+            return True
+
     def _is_running(self, name):
         try:
             sp.check_output(["machinectl", "show", name])
@@ -77,12 +86,19 @@ class Machine():
             return False
 
     def install(self):
-        try:
-            self.output = sp.check_output(["systemd-run", "--service-type=oneshot", "-M", self.module.params['name'], "/usr/bin/emerge", "-u", self.module.params['pkg'] ], stderr=sp.STDOUT)
+        if self._is_pkg_installed():
+            self.changed = False
+            self.output = ""
             return True
-        except sp.CalledProcessError as e:
-            self.output = e.output
-            return False
+        else:
+            try:
+                self.output = sp.check_output(["systemd-run", "--service-type=oneshot", "-M", self.module.params['name'], "/usr/bin/emerge", "-u", self.module.params['pkg'] ], stderr=sp.STDOUT)
+                self.changed = True
+                return True
+            except sp.CalledProcessError as e:
+                self.output = e.output
+                self.changed = True
+                return False
 
     def run(self):
         try:
@@ -168,9 +184,12 @@ def main():
 
     elif module.params['mode'] == "pkg":
         if module.check_mode:
-            module.fail_json(msg="not implemented")
+            if machine._is_pkg_installed():
+                module.exit_json(msg="Package {} is installed in container {}".format(module.params['pkg'],module.params['name']))
+            else:
+                module.fail_json(msg="Package {} is not installed in container {}".format(module.params['pkg'],module.params['name']))
         elif machine.install():
-            module.exit_json(msg="Package {} installed in {}".format(module.params['pkg'],module.params['name']), output=machine.output)
+            module.exit_json(msg="Package {} installed in {}".format(module.params['pkg'],module.params['name']), output=machine.output, changed=machine.changed)
         else:
             module.fail_json(msg="Error installing package {} in {}".format(module.params['pkg'],module.params['name']), output=machine.output)
 
