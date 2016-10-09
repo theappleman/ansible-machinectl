@@ -9,7 +9,9 @@
   - bwm-ng
   - iptraf-ng
   - nmap
-  ignore_errors: yes
+  - dev-vcs/git
+  - ansible
+  - traceroute
 
 - pause: seconds=600
 
