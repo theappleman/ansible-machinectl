@@ -1,10 +1,5 @@
-- name: clone test container
-  machines: name=test source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
-
-- name: machineid
-  shell: systemd-machine-id-setup --root /var/lib/machines/test
-  args:
-    creates: /var/lib/machines/test/etc/machine-id
+- set_fact: container=test
+- include: tasks/create.yml
 
 - name: start test container
   machines: name=test ensure=running

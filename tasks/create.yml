@@ -1,0 +1,8 @@
+- name: "clone {{ container }} container"
+  machines: name={{ container }} source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
+  register: "{{ container }}_create"
+
+- name: machineid
+  shell: systemd-machine-id-setup --root /var/lib/machines/{{ container }}
+  args:
+    creates: /var/lib/machines/{{ container }}/etc/machine-id

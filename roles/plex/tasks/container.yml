@@ -1,11 +1,4 @@
-- name: clone plex container
-  machines: name=plex source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
-  register: plex_create
-
-- name: machineid
-  shell: systemd-machine-id-setup --root /var/lib/machines/plex
-  args:
-    creates: /var/lib/machines/plex/etc/machine-id
+- include: tasks/create.yml
 
 - name: plex nspawn
   copy: src=files/plex.nspawn dest=/etc/systemd/nspawn/plex.nspawn

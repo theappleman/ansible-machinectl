@@ -1,3 +1,4 @@
+- set_fact: container=deluge
 - include: container.yml
 - include: portage.yml
 
