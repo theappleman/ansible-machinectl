@@ -1,0 +1,39 @@
+- set_fact: container=jenkins
+- include: tasks/create.yml
+
+- name: jenkins USE
+  lineinfile: name=/var/lib/machines/jenkins/etc/portage/package.use/jenkins create=yes line={{ item }}
+  with_items:
+  - dev-java/icedtea-bin -gtk
+  - dev-lang/python sqlite
+  register: usechange
+
+- name: jenkins keywords
+  lineinfile: name=/var/lib/machines/jenkins/etc/portage/package.accept_keywords create=yes line={{ item }}
+  with_items:
+  - dev-util/jenkins-bin
+
+- btrfs: state=present path=/srv/volumes/jenkins
+
+- copy: src=files/jenkins.nspawn dest=/etc/systemd/nspawn/jenkins.nspawn
+
+- include: start.yml
+
+- machines: name=jenkins mode=pkg pkg={{item}}
+  with_items:
+  - jenkins-bin
+  - dev-vcs/git
+  - diffstat
+  - chrpath
+
+- machines: name=jenkins mode=pkg pkg=python
+  when: usechange|changed or jenkins_start|changed
+
+- file: state=link src=/usr/lib64/systemd/system/jenkins.service
+        dest=/var/lib/machines/jenkins/etc/systemd/system/multi-user.target.wants/jenkins.service
+        force=yes
+  register: service_link
+
+- machines: name=jenkins mode=run
+            cmd="/usr/bin/systemctl restart jenkins"
+  when: service_link|changed or jenkins_start|changed
