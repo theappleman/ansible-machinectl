@@ -3,5 +3,5 @@
   register: "{{ container }}_start"
 
 - name: await container startup
-  pause: seconds=5
+  pause: seconds=10
   when: "{{ container }}_start|changed"
