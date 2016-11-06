@@ -1,5 +1,17 @@
+- name: grab short git repo version
+  shell: git describe --always
+  args:
+    chdir: /var/lib/machines/gshis
+    warn: no
+  register: gshis_describe
+  changed_when: False
+
+- name: set gshis version
+  set_fact:
+    gshis_version: "{{ gshis_describe.stdout }}"
+
 - name: "clone {{ container }} container"
-  machines: name={{ container }} source=gshis-{{ gshis_describe.stdout }}-systemd ensure=present
+  machines: name={{ container }} source=gshis-{{ gshis_version }}-systemd ensure=present
   register: "{{ container }}_create"
 
 - name: machineid
