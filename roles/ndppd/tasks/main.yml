@@ -1,4 +1,4 @@
-- lineinfile: dest=/etc/portage/package.accept_keywords line="=net-misc/ndppd-0.2.3" create=yes
+- lineinfile: dest=/etc/portage/package.accept_keywords line="=net-misc/ndppd-0.2.5" create=yes
 - portage: package=ndppd
 - copy: src=files/ndppd.service dest=/etc/systemd/system/ndppd.service
   register: ndppdservice
