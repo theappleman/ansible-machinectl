@@ -1,6 +1,7 @@
 [Exec]
 Boot=on
 PrivateUsers=no
+DropCapability=all
 
 [Files]
 Bind=/usr/portage

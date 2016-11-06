@@ -5,6 +5,7 @@
 
 - name: mediacache
   btrfs: state=present name=/srv/mediacache
+  when: ansible_hostname != "azolla"
 
 - name: plex data volume
   btrfs: state=present name=/srv/volumes/plex
