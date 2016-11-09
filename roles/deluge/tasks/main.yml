@@ -16,10 +16,6 @@
 - include: user.yml
 - include: volume.yml
 
-- machines: name=deluge mode=run
-            cmd="/usr/bin/systemctl restart deluged"
-  when: deluge_service_link|changed or deluge_create|changed
-
 - include: iptables.yml
 
 - set_fact:
@@ -28,3 +24,8 @@
 
 - lineinfile: line="{{ deluge_user }}:{{ deluge_password }}:5"
               dest=/srv/volumes/deluge/.config/deluge/auth
+  register: deluge_auth
+
+- machines: name=deluge mode=run
+            cmd="/usr/bin/systemctl restart deluged"
+  when: deluge_service_link|changed or deluge_create|changed or deluge_auth|changed
