@@ -2,6 +2,7 @@
 
 - name: mediacache
   btrfs: ensure=present name=/srv/mediacache
+  when: ansible_hostname != "azolla"
 
 - name: deluge config volume
   btrfs: ensure=present name=/srv/volumes/deluge
