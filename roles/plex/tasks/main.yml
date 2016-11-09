@@ -35,6 +35,7 @@
 - iptables: comment=PLEX
             ip_version=ipv4
             table=nat
+            action=insert
             chain=PREROUTING
             protocol=tcp
             destination_port=32400

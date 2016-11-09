@@ -20,9 +20,9 @@
 - iptables: comment=DELUGE
             ip_version=ipv4
             table=nat
+            action=insert
             chain=PREROUTING
             protocol=tcp
             destination_port=58846
             to_destination="{{ deluge_v4addr.stdout }}:58846"
             jump=DNAT
-            #action=insert
