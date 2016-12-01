@@ -1,4 +1,4 @@
-- machines: state=present name={{ container | mandatory }} source=gshis-{{ gshis_describe.stdout }}-systemd
+- include: tasks/create.yml
 
 - stat: path=/var/lib/machines/{{ container }}
   register: container_root
