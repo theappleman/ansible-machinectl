@@ -1,0 +1,20 @@
+server {
+	listen 0.0.0.0:80;
+	listen    [::]:80;
+
+	include acme-challenge.conf;
+
+	location @proxy {
+		proxy_pass http://localhost:8080;
+		proxy_set_header Host $host;
+		access_log /var/log/nginx/jenkins-access.log combined;
+	}
+
+	location / {
+		try_files $uri $uri/ @proxy;
+	}
+
+}
+
+# https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+behind+an+NGinX+reverse+proxy#JenkinsbehindanNGinXreverseproxy-BeingcompatiblewithCSRFprotection
+ignore_invalid_headers off;

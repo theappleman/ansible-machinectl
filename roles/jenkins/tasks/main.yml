@@ -34,6 +34,8 @@
         force=yes
   register: service_link
 
+- copy: src=files/jenkins.nginx dest=/var/lib/machines/{{ container }}/etc/nginx/conf.d/jenkins.conf
+
 - machines: name=jenkins mode=run
             cmd="/usr/bin/systemctl restart jenkins"
   when: service_link|changed or jenkins_start|changed
