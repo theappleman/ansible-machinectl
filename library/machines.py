@@ -68,6 +68,7 @@ class Machine():
                 "systemd-machine-id-setup",
                 "--root",
                 os.path.join(
+                    "/",
                     "var",
                     "lib",
                     "machines",
