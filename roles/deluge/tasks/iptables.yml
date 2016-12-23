@@ -1,14 +1,26 @@
 - lineinfile: line="[0:0] -A TCP -p tcp --dport 58846 -j ACCEPT"
                insertbefore="COMMIT"
                dest="/var/lib/machines/deluge/var/lib/ip{{ item }}tables/rules-save"
-  register: iptables
   with_items:
   - ""
   - "6"
 
+- lineinfile: line="[0:0] -A {{ item }} -p {{ item | lower }} -m multiport --dports 6881:6889 -j ACCEPT"
+               insertbefore="COMMIT"
+               dest="/var/lib/machines/deluge/var/lib/iptables/rules-save"
+  with_items:
+  - "UDP"
+  - "TCP"
+
+- lineinfile: line="[0:0] -A OUTPUT {{ item }} -j ACCEPT"
+               insertbefore="-A OUTPUT -j REJECT"
+               dest="/var/lib/machines/deluge/var/lib/iptables/rules-save"
+  with_items:
+  - "-p tcp -m multiport --dports 6544,8080"
+  - "-p udp -m multiport --dports 1337,6969"
+
 - machines: name=deluge mode=run
             cmd="/usr/bin/systemctl start ip{{ item }}tables-restore"
-  when: iptables|changed
   with_items:
   - ""
   - "6"
