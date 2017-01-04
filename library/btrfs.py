@@ -54,7 +54,7 @@ def main():
                     module.fail_json(msg="Not able to create subvolume {}".format(module.params['name']))
     elif module.params['state'] == "absent":
         if not btrfs._is_subv(module.params['name']):
-            module.fail_json(msg="{} is not a subvolume".format(module.params['name']), changed=False)
+            module.exit_json(msg="{} is not a subvolume".format(module.params['name']), changed=False)
         else:
             if module.check_mode:
                 module.exit_json(changed=True)
