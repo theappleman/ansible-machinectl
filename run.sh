@@ -1,7 +1,9 @@
 #!/bin/bash
 
-while getopts c:vKs opt; do
+while getopts c:e:vKs opt; do
 	case $opt in
+	e)	exargs="$exargs -e $OPTARG"
+		;;
 	c)	transport="-c $OPTARG"
 		;;
 	K|s|v)	exargs="$exargs -$opt"
